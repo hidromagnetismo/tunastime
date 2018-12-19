@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+	<meta name="theme-color" content="#000"/>
+	<meta name="MobileOptimized" content="width"/>
+	<meta name="HandhelpFriendly" content="true"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+	<link rel="shortcut icon" type="image/png" href="./img/mr_robot_icon.jpg">
+	<link rel="apple-touch-startup-image" type="image/png" href="./img/icons/offlinux_mrobot_tpb_32.jpg">
+	<link rel="manifest" href="./manifest.json">
+	<title>Cronometro</title>
+	<style>
+
+		body { 
+			background-color: white !important;
+			margin:0;
+			/*https://developers.google.com/web/updates/2017/11/overscroll-behavior*/
+			/*https://wicg.github.io/overscroll-behavior/*/
+			/*https://caniuse.com/#search=overscroll*/
+			/*overscroll-behavior-y: none;*/
+			overscroll-behavior: none;
+			/*touch-action: manipulation;*/
+			/*https://caniuse.com/#search=touch-action*/
+			touch-action: none;
+			line-height: unset !important;
+		}
+
+    	.clock {
+			font-size: 25vw;
+    	}
+    	.button {
+
+    	}
+    	.keyboard {
+			width: 320px;
+			/*padding-left: 5px;*/
+			padding-bottom: 5px;
+			position: absolute;
+			bottom: 0px;
+			left: 0;
+			right: 0;
+			margin-left: auto;
+			margin-right: auto;
+    	}
+    	.btn_keyboard {
+			width: 94px;
+			font-size: 25px !important;
+			margin-top: 8px;
+			margin-left: 7px;
+    	}
+
+		.registerList {
+    /*max-width: 600px;*/
+    width: 320px;
+    /*min-width: 320px;*/
+    height: calc(100vh - 233px);
+    overflow-y: scroll;
+    top: 0px;
+
+	position: absolute;
+	bottom: 0px;
+	left: 0;
+	right: 0;
+	margin-left: auto;
+	margin-right: auto;
+
+		}
+		.registro {
+    /*width: 100vw;*/
+		}
+		.common_registro {
+    height: 50px;
+    float: left;
+	margin-top: 2px;
+		}
+		.eliminar {
+	width: 40px;
+    font-size: 23px;
+    border: 1px solid;
+    padding: 7px;
+    padding-top: 12px;
+		}
+		.competidor {
+    width: 40px;
+    font-size: 26px;
+    padding: 4px;
+    padding-top: 9px;
+		}
+		.tiempo {
+    width: 180px;
+    background: #9e6e6e;
+    color: white;
+    padding-top: 12px;
+    padding-left: 10px;
+    font-size: 24px;
+    text-align: center;
+		}
+		.baul {
+    width: 40px;
+    font-size: 34px;
+    border: 1px solid;
+    padding: 2px;
+    padding-top: 6px;
+		}
+
+	</style>
+	<link rel="stylesheet" href="./css/bootstrap.min.css">
+</head>
+<body>
+	<!-- <span id="theTime" class="clock"></span> -->
+	<div id="app">
+		<!-- <button type="button" class="btn btn-primary btn-lg" v-on:click="guardar();">Guardar</button> -->
+		<div class="registerList">
+			<div class="registro"  v-for="(registro, index) in registros">
+				<div class="common_registro eliminar" v-on:click="eliminar(index);"><i class="glyphicon glyphicon-trash"></i></div>
+				<div class="common_registro competidor">{{ registro.competidor }}</div>
+				<div class="common_registro tiempo" v-on:click="seTime(index);">{{ registro.tiempo }}</div>
+				<div class="common_registro baul"><i class="glyphicon glyphicon-menu-right"></i></div>
+			</div>
+		</div>
+
+		<div class="keyboard">
+			<button type="button" class="btn btn-default btn_keyboard" v-on:click="number('1');">1</button>
+			<button type="button" class="btn btn-default btn_keyboard" v-on:click="number('2');">2</button>
+			<button type="button" class="btn btn-default btn_keyboard" v-on:click="number('3');">3</button>
+			<br>
+			<button type="button" class="btn btn-default btn_keyboard" v-on:click="number('4');">4</button>
+			<button type="button" class="btn btn-default btn_keyboard" v-on:click="number('5');">5</button>
+			<button type="button" class="btn btn-default btn_keyboard" v-on:click="number('6');">6</button>
+			<br>
+			<button type="button" class="btn btn-default btn_keyboard" v-on:click="number('7');">7</button>
+			<button type="button" class="btn btn-default btn_keyboard" v-on:click="number('8');">8</button>
+			<button type="button" class="btn btn-default btn_keyboard" v-on:click="number('9');">9</button>
+			<br>
+			<!-- <button type="button" class="btn btn-default btn_keyboard" v-on:click="categoria();"><i class="glyphicon glyphicon-trash"></i></button> -->
+			<button type="button" class="btn btn-default btn_keyboard" v-on:click="categoria();">{{ currentCategory }}</button>
+			<button type="button" class="btn btn-default btn_keyboard" v-on:click="number('0');">0</button>
+			<button type="button" class="btn btn-default btn_keyboard" v-on:click="guardar();"><i class="glyphicon glyphicon-ok"></i></button>
+		</div>
+
+	</div>
+	<script src="./worker.js"></script>
+	<script src="./script.js"></script>
+	<script src="./js/jquery.min.js"></script>
+	<script src="./js/bootstrap.min.js"></script>
+	<script src="./js/vue.min.js"></script>
+	<script>
+		// var clockID;
+		// var yourTimeZoneFrom = -4.00; //time zone value where you are at
+
+		// var d = new Date();  
+		// //get the timezone offset from local time in minutes
+		// var tzDifference = yourTimeZoneFrom * 60 + d.getTimezoneOffset();
+		// //convert the offset to milliseconds, add to targetTime, and make a new Date
+		// var offset = tzDifference * 60 * 1000;
+
+		// function UpdateClock() {
+		//     var tDate = new Date(new Date().getTime()+offset);
+		//     var in_hours = tDate.getHours()
+		//     var in_minutes=tDate.getMinutes();
+		//     var in_seconds= tDate.getSeconds();
+
+		//     if(in_minutes < 10)
+		//         in_minutes = '0'+in_minutes;
+		//     if(in_seconds<10)   
+		//         in_seconds = '0'+in_seconds;
+		//     if(in_hours<10) 
+		//         in_hours = '0'+in_hours;
+
+		//    document.getElementById('theTime').innerHTML = "" 
+		//                    + in_hours + ":" 
+		//                    + in_minutes + ":" 
+		//                    + in_seconds;
+
+		// }
+		// function StartClock() {
+		//    clockID = setInterval(UpdateClock, 500);
+		// }
+
+		// function KillClock() {
+		//   clearTimeout(clockID);
+		// }
+		// window.onload=function() {
+		//   StartClock();
+		// }
+
+
+		var clockID;
+		var yourTimeZoneFrom = -4.00; //time zone value where you are at
+
+		var d = new Date();  
+		//get the timezone offset from local time in minutes
+		var tzDifference = yourTimeZoneFrom * 60 + d.getTimezoneOffset();
+		//convert the offset to milliseconds, add to targetTime, and make a new Date
+		var offset = tzDifference * 60 * 1000;
+
+		function UpdateClock() {
+		    var tDate = new Date(new Date().getTime()+offset);
+		    var in_hours = tDate.getHours()
+		    var in_minutes=tDate.getMinutes();
+		    var in_seconds= tDate.getSeconds();
+
+		    if(in_minutes < 10)
+		        in_minutes = '0'+in_minutes;
+		    if(in_seconds<10)   
+		        in_seconds = '0'+in_seconds;
+		    if(in_hours<10) 
+		        in_hours = '0'+in_hours;
+
+		   return "" 
+		                   + in_hours + ":" 
+		                   + in_minutes + ":" 
+		                   + in_seconds;
+
+		}
+
+
+
+		app = new Vue({
+			el: '#app',
+			data: {
+				registros: [
+
+				],
+				currentIndex: 0,
+				currentCategory: 0,
+			},
+			methods: {
+				number: function(number){
+
+					if(this.registros.length == 0){
+						this.guardar();
+						this.registros[0].competidor = number;
+						this.currentIndex = this.registros.length-1;
+					}else{
+						if(this.registros[this.currentIndex].competidor.toString().length>1){
+							this.guardar();
+							this.currentIndex = this.registros.length-1;
+							this.registros[this.currentIndex].competidor = number;
+						}else{
+							this.registros[this.currentIndex].competidor += number;
+						}
+					}
+
+				},
+				categoria: function(){
+					// this.registros.splice(index, 1);
+				},
+				eliminar: function(index){
+					this.registros.splice(index, 1);
+					this.currentIndex = this.registros.length-1;
+				},
+				guardar: function(){
+					this.registros.push(
+						{
+							categoria: this.currentCategory,
+							competidor: '22',
+							// tiempo: (new Date()),
+							tiempo: $('#theTime').text(),
+						}
+					);
+				},
+				seTime: function(index){
+					// this.registros[index].tiempo = (new Date());
+					this.registros[index].tiempo = UpdateClock();
+				}
+			},
+		});
+
+
+
+
+
+
+
+
+
+
+
+
+
+		// Function to disable "pull-to-refresh" effect present in some webviews.
+		// Especially Crosswalk 12 and above (Chromium 41+) runtimes.
+
+		window.addEventListener('load', function() {
+		    var lastTouchY = 0 ;
+		    var maybePreventPullToRefresh = false ;
+
+		    // Pull-to-refresh will only trigger if the scroll begins when the
+		    // document's Y offset is zero.
+
+		    var touchstartHandler = function(e) {
+		        if( e.touches.length != 1 ) {             
+		            return ;
+		        }
+		        lastTouchY = e.touches[0].clientY ;
+		        // maybePreventPullToRefresh = (preventPullToRefreshCheckbox.checked) && (window.pageYOffset == 0) ;
+		        maybePreventPullToRefresh = (window.pageYOffset === 0) ;
+		        //document.getElementById('txtLog').textContent = "maybePreventPullToRefresh: " + maybePreventPullToRefresh;
+		    };
+
+		    // To suppress pull-to-refresh it is sufficient to preventDefault the
+		    // first overscrolling touchmove.
+
+		    var touchmoveHandler = function(e) {
+		        var touchY = e.touches[0].clientY ;
+		        var touchYDelta = touchY - lastTouchY ;
+		        lastTouchY = touchY ;
+
+		        if (maybePreventPullToRefresh) {
+		            maybePreventPullToRefresh = false ;
+		            //if (touchYDelta > 0) {
+		                e.preventDefault() ;
+		                //document.getElementById('txtLog').textContent = "TouchY: " + touchYDelta;
+		                // console.log("pull-to-refresh event detected") ;
+		                return ;
+		            //}
+		        }
+
+		        // if (preventScrollCheckbox.checked) {
+		        //     e.preventDefault() ;
+		        //     return ;
+		        // }
+
+		        // if (preventOverscrollGlowCheckbox.checked) {
+		        //     if (window.pageYOffset == 0 && touchYDelta > 0) {
+		        //         e.preventDefault() ;
+		        //         return ;
+		        //     }
+		        // }
+		    };
+
+		    document.addEventListener('touchstart', touchstartHandler, false) ;
+		    document.addEventListener('touchmove', touchmoveHandler, false) ;
+		    // document.addEventListener('touchmove', touchmoveHandler, false) ;
+		}) ;
+
+
+
+
+	</script>
+</body>
+</html>
+
+
+
+
+<!-- 
+
+git init
+git add .
+git commit -m "Primer commit"
+git branch gh-pages
+git checkout 'gh-pages'
+git push -u origin gh-pages
+
+-->

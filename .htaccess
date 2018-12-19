@@ -1,0 +1,8 @@
+# AuthType Basic
+# AuthName "off-linux"
+# AuthUserFile ./.htpasswd
+# # AuthUserFile /home/programandoweb/.htpasswd
+# Require valid-user
+# Order allow,deny
+# Allow from 127.0.0.1
+# Satisfy Any

@@ -1,0 +1,44 @@
+{
+	"name": "TunasTime",
+	"short_name": "TT",
+	"description": "Registro de tiempos de competencia",
+	"background_color": "#000",
+	"theme_color": "#000",
+	"orientation": "portrait",
+	"display": "standalone",
+	"start_url": "./?utm_source=web_app_manifest",
+	"scope": "./",
+	"lang": "es-VE",
+	"icons": [
+		{
+			"src": "./img/icons/offlinux_mrobot_tpb_512.jpg",
+			"sizes": "512x512",
+			"type": "image/png"
+		},
+		{
+			"src": "./img/icons/offlinux_mrobot_tpb_256.jpg",
+			"sizes": "256x256",
+			"type": "image/png"
+		},
+		{
+			"src": "./img/icons/offlinux_mrobot_tpb_128.jpg",
+			"sizes": "128x128",
+			"type": "image/png"
+		},
+		{
+			"src": "./img/icons/offlinux_mrobot_tpb_64.jpg",
+			"sizes": "64x64",
+			"type": "image/png"
+		},
+		{
+			"src": "./img/icons/offlinux_mrobot_tpb_32.jpg",
+			"sizes": "32x32",
+			"type": "image/png"
+		},
+		{
+			"src": "./img/icons/offlinux_mrobot_tpb_16.jpg",
+			"sizes": "16x16",
+			"type": "image/png"
+		}
+	]
+}
